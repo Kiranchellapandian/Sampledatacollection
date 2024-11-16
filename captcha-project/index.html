@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal with Captcha Verification</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* CSS styling for the form and captcha */
+    .portal-container {
+      border: 1px solid #ccc;
+      padding: 30px;
+      width: 400px;
+      margin: 50px auto;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input[type="text"] {
+      padding: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      animation: slideIn 1s ease-in-out;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: slideIn 1.5s ease-in-out;
+    }
+
+    button:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const Captcha = () => {
+      const [isChecked, setIsChecked] = useState(false);
+      const [isVerified, setIsVerified] = useState(false);
+      const [isProcessing, setIsProcessing] = useState(false);
+
+      const handleCheckboxChange = async () => {
+        setIsProcessing(true);
+        setTimeout(() => {
+          setIsChecked(true);
+          setIsVerified(true);
+          alert('Captcha verified successfully!');
+          setIsProcessing(false);
+        }, 1000);
+      };
+
+      return (
+        <div className="captcha-container">
+          <h3>Captcha Verification</h3>
+          <div className="captcha-checkbox">
+            <input
+              type="checkbox"
+              id="robotCheck"
+              checked={isChecked}
+              disabled={isProcessing}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor="robotCheck">I'm not a robot</label>
+          </div>
+          {isVerified && <p style={{ color: 'green' }}>Captcha Verified!</p>}
+        </div>
+      );
+    };
+
+    const Portal = () => {
+      const [aadhaarNumber, setAadhaarNumber] = useState('');
+      const [errorMessage, setErrorMessage] = useState('');
+
+      const handleAadhaarChange = (e) => {
+        const value = e.target.value;
+        if (/^\d{0,12}$/.test(value)) {
+          setAadhaarNumber(value);
+          setErrorMessage('');
+        } else {
+          setErrorMessage('Aadhaar number must be exactly 12 digits.');
+        }
+      };
+
+      const handleLogin = () => {
+        if (aadhaarNumber.length === 12) {
+          alert('Login successful!');
+        } else {
+          setErrorMessage('Please enter a valid 12-digit Aadhaar number.');
+        }
+      };
+
+      return (
+        <div className="portal-container">
+          <h2>Login Portal</h2>
+          <div className="form-group">
+            <label htmlFor="aadhaarNumber">Aadhaar Number:</label>
+            <input
+              type="text"
+              id="aadhaarNumber"
+              value={aadhaarNumber}
+              onChange={handleAadhaarChange}
+              placeholder="Enter your 12-digit Aadhaar number"
+            />
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+          </div>
+          <Captcha />
+          <button id="loginButton" onClick={handleLogin} disabled={aadhaarNumber.length !== 12}>
+            Login
+          </button>
+        </div>
+      );
+    };
+
+    const App = () => {
+      return (
+        <div className="App">
+          <Portal />
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+
+    // Initialize variables for tracking interaction data
+    let startTime = new Date().getTime();
+    let cursorMovements = [];
+    let keyPressData = [];
+    let clickCount = 0;
+    let lastCursorTime = startTime;
+    let lastKeyPressTime = startTime;
+    let idleTime = 0;
+    let lastActivityTime = startTime;
+    let scrollEvents = 0;
+    let pageTransitions = [];
+    let dwellTimes = [];
+    let totalScrollDistance = 0;
+    let currentScrollPosition = window.scrollY;
+
+    // Cursor movement tracking
+    document.addEventListener('mousemove', (event) => {
+      const currentTime = new Date().getTime();
+      const timeElapsed = (currentTime - lastCursorTime) / 1000; // in seconds
+
+      // Record cursor movement
+      if (cursorMovements.length > 0) {
+        const dx = event.clientX - cursorMovements[cursorMovements.length - 1].x;
+        const dy = event.clientY - cursorMovements[cursorMovements.length - 1].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        cursorMovements.push({ x: event.clientX, y: event.clientY, time: currentTime, distance: distance });
+      } else {
+        cursorMovements.push({ x: event.clientX, y: event.clientY, time: currentTime, distance: 0 });
+      }
+
+      lastCursorTime = currentTime;
+      lastActivityTime = currentTime;
+    });
+
+    // Click event tracking
+    document.addEventListener('click', () => {
+      clickCount++;
+      lastActivityTime = new Date().getTime();
+    });
+
+    // Keystroke tracking
+    document.addEventListener('keydown', (event) => {
+      const currentTime = new Date().getTime();
+      const pressDuration = currentTime - lastKeyPressTime;
+      keyPressData.push({ key: event.key, pressDuration: pressDuration });
+      lastKeyPressTime = currentTime;
+      lastActivityTime = currentTime;
+    });
+
+    // Scroll tracking
+    window.addEventListener('scroll', () => {
+      scrollEvents++;
+      const newScrollPosition = window.scrollY;
+      totalScrollDistance += Math.abs(newScrollPosition - currentScrollPosition);
+      currentScrollPosition = newScrollPosition;
+      lastActivityTime = new Date().getTime();
+    });
+
+    // Page unload tracking for final data logging
+    window.addEventListener('beforeunload', () => {
+      sessionDuration = (new Date().getTime() - startTime) / 1000; // in seconds
+      logPageTransition();
+
+      const interactionData = {
+        avgCursorSpeed: calculateAvgCursorSpeed(cursorMovements),
+        cursorAcceleration: calculateCursorAcceleration(cursorMovements),
+        pathDeviation: calculatePathDeviation(cursorMovements),
+        idleTime: idleTime,
+        jitter: calculateAvgJitter(cursorMovements),
+        clickPattern: clickCount,
+        typingSpeed: calculateTypingSpeed(keyPressData),
+        keyPressDuration: calculateAvgKeyPressDuration(keyPressData),
+        keyTransitionTime: calculateAvgKeyTransitionTime(keyPressData),
+        keyHoldTime: calculateAvgKeyPressDuration(keyPressData),
+        errorRate: calculateErrorRate(keyPressData),
+        sessionDuration: sessionDuration,
+        pageNavigationPattern: pageTransitions,
+        averageDwellTime: calculateAverageDwellTime(dwellTimes),
+        scrollBehavior: totalScrollDistance
+      };
+
+      navigator.sendBeacon('http://localhost:3000/save-data', JSON.stringify(interactionData));
+    });
+
+    // Placeholder calculation functions omitted for brevity (use existing logic in your current script)
+  </script>
+  <footer>
+    <p>Note: This page collects data to demonstrate interaction tracking for research purposes.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+    "rewrites": [
+      { "source": "/(.*)", "destination": "C:\Users\SEC\Desktop\SIH2024\realtimedatasets\Collecter\public\index.html" }
+    ]
+  }
+  
