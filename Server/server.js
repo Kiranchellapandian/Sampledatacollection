@@ -9,7 +9,13 @@ const PORT = 300;
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [''],
+    methods: ['POST', 'GET'],
+    credentials: true,
+  })
+);
 
 // Connect to MongoDB
 mongoose.connect('mongodb+srv://NARIK19991c:<LLW1eBtA7jlvl9g2>@lablehuman.uni8x.mongodb.net/humandata?retryWrites=true&w=majority&appName=LABLEHUMAN')
